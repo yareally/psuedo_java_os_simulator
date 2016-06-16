@@ -1,0 +1,58 @@
+create -> touch
+delete -> rm
+read -> cat
+write -> echo "test ...." >> test/1.txt
+setacl -> chmod
+print -> ls
+getacl -> ls -l
+*
+..
+
+
+Assumptions: only one user and one group per file
+error when trying to remove a subdirectory that is not empty
+    user@localhost /cygdrive/r/test
+    $ rmdir subDir
+    rmdir: failed to remove `subDir': Directory not empty
+
+In this way, a single algorithm can be written for traversing a graph of files/directories (visitables), and many different kinds of operations can be performed during that traversal by supplying different kinds of commands (visitors) to interact with the files/directories (visitables) based on the dynamic types of both the files/directories (visitables) and the commands (visitors).
+
+1. implement the file system - visitables - files and directories
+    a) create the visitable interface then implement in abstract class - just an accept method that accepts a visitor
+    b) abstract base class for things in common with both files and directories to  avoid code dupe
+         i) each file and directory will have a parent so that you can determine where you are based on the parent
+        ii)
+    c) concrete classes for directory and file -> things not in common with each other
+        i) each file/directory will have an accept method that takes a visitor (command) as a parameter.
+        ii) inside each accept method it calls the commands visit method which takes the current file/directory object as a parameter.
+    d) to change the group or user of a file/directory look at the current file/directory user/group permissions and see if they have the rights to change them
+
+2. implement the commands - visitors that visit the files and directories
+    a) visitor interface - start visit, visit, and end visit also an is done, which keeps visiting until done
+    visits are going to accept the file/directory (visitable)
+    b) concrete command classes that implement the visitor - do all of the command stuff in these classes (class for each command)
+    c) logout command
+
+3. implement the users class - holds info about the users
+    a) users - current users allowed in the system. each user object will have credentials: user name
+
+4. implement the user groups class - collections of various users with shared perm on certin files/directories for that group ex: faculty and students
+
+5. implement a search strategy interface to find dir/file
+    a) matches - takes a file
+    b) matches - takes a directory (overloaded)
+    c) various search concrete classes that implement the interface
+    can search for partial names or by exact name of file
+
+
+
+user collection class - holds the master list of users, used to determine if user can log in or not.. holds collection of users
+
+group collection class - holds all various groups
+
+if root user - let do whatever it wants - boolean "is root"
+permissions - check if root user
+
+may use template method for users/groups to share common functionality
+-they both have a name
+- get name as a method
